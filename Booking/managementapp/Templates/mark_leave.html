@@ -1,0 +1,147 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mark Leave</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body { background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .leave-card { background: #fff; border-radius: 15px; padding: 2rem; box-shadow: 0 6px 20px rgba(0,0,0,0.15); max-width: 600px; margin: 60px auto; transition: 0.3s; }
+    .leave-card:hover { transform: scale(1.02); }
+    h2 { font-weight: bold; color: #0d6efd; text-align: center; margin-bottom: 1.5rem; }
+    .btn-danger { width: 100%; font-size: 1.1rem; border-radius: 10px; padding: 0.7rem; font-weight: bold; }
+  </style>
+
+  <script>
+    function toggleFullDayLeave(checkbox) {
+      const morning = document.getElementById("morning");
+      const afternoon = document.getElementById("afternoon");
+
+      if (checkbox.checked) {
+        morning.checked = true;
+        afternoon.checked = true;
+        morning.disabled = true;
+        afternoon.disabled = true;
+      } else {
+        // when unchecking full day, keep the checked state as-is OR clear both (choose behaviour)
+        // I'll clear both here to match the view logic where full_day -> both True
+        morning.disabled = false;
+        afternoon.disabled = false;
+        morning.checked = false;
+        afternoon.checked = false;
+      }
+    }
+
+    function checkFullDayAuto() {
+      const morning = document.getElementById("morning");
+      const afternoon = document.getElementById("afternoon");
+      const fullDay = document.getElementById("full_day");
+
+      if (morning.checked && afternoon.checked) {
+        fullDay.checked = true;
+        morning.disabled = true;
+        afternoon.disabled = true;
+      } else {
+        fullDay.checked = false;
+        morning.disabled = false;
+        afternoon.disabled = false;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      // set min date to today
+      let today = new Date();
+      let yyyy = today.getFullYear();
+      let mm = String(today.getMonth() + 1).padStart(2, '0');
+      let dd = String(today.getDate()).padStart(2, '0');
+      let todayStr = `${yyyy}-${mm}-${dd}`;
+      document.getElementById("date").setAttribute("min", todayStr);
+
+      // if server pre-checked full_day, ensure morning/afternoon are disabled
+      const fullDay = document.getElementById("full_day");
+      if (fullDay && fullDay.checked) {
+        toggleFullDayLeave(fullDay);
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="leave-card">
+    <h2>🩺 Mark Leave for Dr. {{ doctor.name }}</h2>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="date" class="form-label fw-bold">📅 Select Date</label>
+        <input type="date" id="date" name="date" class="form-control"
+               value="{% if booking_date %}{{ booking_date }}{% elif leave %}{{ leave.date|date:'Y-m-d' }}{% endif %}" required>
+      </div>
+
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" id="morning" name="morning"
+               {% if leave and leave.morning %}checked{% endif %}
+               {% if leave and leave.morning and leave.afternoon %}disabled{% endif %}
+               onchange="checkFullDayAuto()">
+        <label class="form-check-label" for="morning">☀️ Morning Leave</label>
+      </div>
+
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" id="afternoon" name="afternoon"
+               {% if leave and leave.afternoon %}checked{% endif %}
+               {% if leave and leave.morning and leave.afternoon %}disabled{% endif %}
+               onchange="checkFullDayAuto()">
+        <label class="form-check-label" for="afternoon">🌙 Afternoon Leave</label>
+      </div>
+
+      <div class="form-check mb-4">
+        <input class="form-check-input" type="checkbox" id="full_day" name="full_day"
+               {% if leave and leave.morning and leave.afternoon %}checked{% endif %}
+               onclick="toggleFullDayLeave(this)">
+        <label class="form-check-label" for="full_day">🚫 Full Day Leave</label>
+      </div>
+
+      <button type="submit" class="btn btn-danger">💾 Save Leave</button>
+    </form>
+  </div>
+
+  <!-- success modal (optional) -->
+  <div class="modal fade" id="leaveSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center">
+        <div class="modal-header border-0">
+          <h5 class="modal-title text-success w-100"><i class="bi bi-check-circle-fill me-2"></i> Leave Submitted!</h5>
+        </div>
+        <div class="modal-body">✅ Your leave was marked successfully.</div>
+        <div class="modal-footer border-0 justify-content-center">
+          <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  {% if messages %}
+    {% for message in messages %}
+      {% if 'success' in message.tags %}
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            var modal = new bootstrap.Modal(document.getElementById('leaveSuccessModal'));
+            modal.show();
+          });
+        </script>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</body>
+</html>
+
+
+
+
+

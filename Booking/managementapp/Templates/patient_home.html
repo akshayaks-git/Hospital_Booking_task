@@ -1,0 +1,110 @@
+
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Home</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            background-image: url("{% static 'images/patient_home.jpg' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #0d6efd, #20c997);
+        }
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .navbar-nav .nav-link {
+            color: white !important;
+            font-weight: 500;
+            margin-left: 1rem;
+            transition: 0.3s;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #ffe066 !important;
+            transform: translateY(-2px);
+        }
+
+        /* Appointments button */
+        .btn-appointments {
+            background: linear-gradient(135deg, #f6d365, #fda085);
+            color: white;
+            border: none;
+            font-weight: 600;
+            border-radius: 30px;
+            padding: 0.5rem 1.2rem;
+            transition: 0.3s ease;
+        }
+        .btn-appointments:hover {
+            background: linear-gradient(135deg, #fda085, #f6d365);
+            transform: scale(1.05);
+        }
+
+        /* Logout button */
+        .logout-btn {
+            border-radius: 30px;
+            padding: 0.3rem 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg shadow">
+        <div class="container">
+            <a class="navbar-brand" href="#">🏥 Patient Home</a>
+            <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                  
+                    <li class="nav-item">
+                        <a href="{% url 'my_appointments' %}" class="btn btn-appointments ms-2">
+                            <i class="bi bi-calendar-check"></i> My Appointments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'booking' %}"><i class="bi bi-journal-plus"></i> Booking</a>
+                    </li>
+                    <a href="{% url 'patient_profile' %}" class="btn btn-primary">
+                      View My Profile
+                    </a>
+                    <li class="nav-item ms-3">
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm logout-btn">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+    <!-- Welcome Section -->
+    <div class="container text-center mt-5 text-white">
+        <h1 class="fw-bold">👋 Welcome, {{ request.user.username }}</h1>
+        <p class="lead">Manage your bookings, check doctor availability, and view your appointments easily.</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+    body { background: #f8f9fa; min-height: 100vh; }
+    .dashboard-header { background: linear-gradient(135deg, #0d6efd, #6610f2); color: white; padding: 1.5rem 2rem; border-radius: 0.5rem; margin-bottom: 2rem; position: relative; }
+    .dashboard-header h1 { margin: 0; font-size: 2rem; }
+    .dashboard-header p { margin: 0; font-size: 1rem; }
+    .logout-btn { position: absolute; top: 1rem; right: 1rem; }
+    .table th, .table td { vertical-align: middle; text-align: center; }
+    .badge { font-size: 0.85em; }
+    .action-btns a { margin-bottom: 0.25rem; display: inline-block; }
+    .card { border-radius: 1rem; }
+    .card-title { font-size: 1.25rem; font-weight: 600; }
+    .table-responsive { max-height: 500px; overflow-y: auto; }
+</style>
+</head>
+<body>
+
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="dashboard-header text-center">
+        <h1><i class="bi bi-speedometer2"></i> Admin Dashboard</h1>
+        <p>Manage doctors, patients, and appointments</p>
+        <form action="{% url 'logout' %}" method="post" class="logout-btn">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </form>
+    </div>
+
+    <!-- Dashboard Badges -->
+    <div class="mb-4 text-center">
+        <span class="badge bg-primary me-2">Total Doctors: {{ total_doctors }}</span>
+        <span class="badge bg-success me-2">Total Patients: {{ total_patients }}</span>
+        <span class="badge bg-warning me-2">Total Appointments: {{ total_appointments }}</span>
+        <span class="badge bg-info">Today's Appointments: {{ today_appointments }}</span>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mb-3 text-end">
+        <a href="{% url 'register_doctor' %}" class="btn btn-dark btn-sm">
+            <i class="bi bi-person-plus-fill"></i> Add Doctor
+        </a>
+      
+        <a href="{% url 'appointments_list' %}" class="btn btn-success btn-sm">
+            <i class="bi bi-calendar-check-fill"></i> All Appointments
+        </a>
+    </div>
+
+    <!-- Doctors Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title mb-3"><i class="bi bi-person-badge"></i> Registered Doctors</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mb-0">
+                    <thead class="table-dark sticky-top">
+                        <tr>
+                            <th>Name</th>
+                            <th>Specialization</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Consultation Fee</th>
+                            <th>Availability (Today)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in doctor_status %}
+                        <tr>
+                            <td>Dr. {{ item.doctor.name }}</td>
+                            <td>{{ item.doctor.doc_spec }}</td>
+                            <td>{{ item.doctor.email }}</td>
+                            <td>{{ item.doctor.phone_number }}</td>
+                            <td>₹ {{ item.doctor.consultation_fee }}</td>
+                           
+                            <td>
+                                {% if "Available" in item.status %}
+                                    <span class="badge bg-success">{{ item.status }}</span>
+                                {% elif "Leave" in item.status %}
+                                    <span class="badge bg-danger">{{ item.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">{{ item.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="action-btns">
+                                <a href="{% url 'update_doctor' item.doctor.id %}" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <a href="{% url 'delete_doctor' item.doctor.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">No doctors found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - Doctor Management</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+    body {
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+
+    /* Header */
+    .dashboard-header {
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        color: white;
+        padding: 1.5rem 2rem;
+        border-radius: 0.5rem;
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    .dashboard-header h1 { margin: 0; font-size: 2rem; }
+    .dashboard-header p { margin: 0; font-size: 1rem; }
+    .logout-btn { position: absolute; top: 1rem; right: 1rem; }
+
+    /* Table */
+    .table th, .table td { vertical-align: middle; text-align: center; }
+    .badge { font-size: 0.85em; }
+    .action-btns a { margin-bottom: 0.25rem; display: inline-block; }
+
+    /* Card */
+    .card { border-radius: 1rem; }
+    .card-title { font-size: 1.25rem; font-weight: 600; }
+
+    /* Responsive table wrapper */
+    .table-responsive { max-height: 500px; overflow-y: auto; }
+
+</style>
+</head>
+<body>
+
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="dashboard-header text-center">
+        <h1><i class="bi bi-speedometer2"></i> Admin Dashboard</h1>
+        <p>Manage doctors, patients, and system data</p>
+
+        <form action="{% url 'logout' %}" method="post" class="logout-btn">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+        </form>
+    </div>
+
+    <!-- Add Doctor Button -->
+    <div class="mb-3 text-end">
+        <a href="{% url 'register_doctor' %}" class="btn btn-dark btn-sm">
+            <i class="bi bi-person-plus-fill"></i> Add Doctor
+        </a>
+    </div>
+    <div class="mb-3 text-end">
+    <a href="{% url 'patients_list' %}" class="btn btn-primary btn-sm me-2">
+        <i class="bi bi-people-fill"></i> Total Patients: {{ total_patients }}
+    </a>
+     <a href="{% url 'appointments_list' %}" class="btn btn-success btn-sm">
+        <i class="bi bi-calendar-check-fill"></i> Total Appointments: {{ total_appointments }}
+    </a> 
+</div>
+
+    <!-- Messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Doctors Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title mb-3"><i class="bi bi-person-badge"></i> Registered Doctors</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped mb-0">
+                    <thead class="table-dark sticky-top">
+                        <tr>
+                            <th>Name</th>
+                            <th>Specialization</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Fee</th>
+                            <th>Available Days</th>
+                            <th>Availability (Today)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in doctor_status %}
+                        <tr>
+                            <td>Dr. {{ item.doctor.name }}</td>
+                            <td>{{ item.doctor.doc_spec }}</td>
+                            <td>{{ item.doctor.email }}</td>
+                            <td>{{ item.doctor.phone_number }}</td>
+                            <td>₹ {{ item.doctor.consultation_fee }}</td>
+                            <td>
+                                {% for day in item.doctor.available_days.all %}
+                                    <span class="badge bg-info text-dark">{{ day.name }}</span>
+                                {% empty %}
+                                    <span class="text-muted">None</span>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if "Available" in item.status %}
+                                    <span class="badge bg-success">{{ item.status }}</span>
+                                {% elif "Leave" in item.status %}
+                                    <span class="badge bg-danger">{{ item.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">{{ item.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="action-btns">
+                                <a href="{% url 'update_doctor' item.doctor.id %}" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <a href="{% url 'delete_doctor' item.doctor.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">No doctors found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> {% endcomment %}

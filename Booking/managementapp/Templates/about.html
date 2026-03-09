@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}  
+
+{% block title %}
+About Us
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center">About Us</h1>
+    <hr>
+
+    <div class="row my-4">
+        <div class="col-md-6">
+            <h2>Welcome to Revive Hospital </h2>
+            <p>
+                At *Revive Hospital*, we are committed to providing exceptional healthcare with compassion and care. Established with the goal of revitalizing health and wellness in the community, we have built a legacy of trust, dedication, and innovation. Our state-of-the-art facility is equipped with advanced medical technology, and we offer a comprehensive range of medical services for individuals of all ages.
+            </p>
+            <p>
+                Whether you are visiting us for routine checkups, specialized treatments, or critical care, we ensure that each patient receives personalized attention from our highly skilled and experienced team of doctors, nurses, and healthcare professionals. We are passionate about delivering top-notch healthcare in a compassionate and patient-centered environment.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'images/doctor1.jpeg' %}" alt="Revive Hospital" class="img-fluid rounded shadow">
+        </div>
+    </div>
+
+    <div class="row my-4">
+        <div class="col-md-6">
+            <img src="{% static 'images/lab.jpg' %}" alt="Medical Team" class="img-fluid rounded shadow">
+        </div>
+        <div class="col-md-6">
+            <h2>Our Mission</h2>
+            <p>
+                Our mission at *Revive Hospital* is to deliver world-class healthcare services that restore hope and health to all our patients. We aim to enhance the quality of life for every individual who walks through our doors by:
+            </p>
+            <ul>
+                <li>Providing high-quality medical care using the latest technology and treatments.</li>
+                <li>Offering compassionate and empathetic patient care.</li>
+                <li>Promoting health education and prevention for long-term wellness.</li>
+                <li>Ensuring a safe and supportive environment for healing and recovery.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row my-4">
+        <div class="col-md-6">
+            <h2>Our Vision</h2>
+            <p>
+                At *Revive Hospital*, our vision is to become a leader in the healthcare industry by continually improving and expanding our services. We strive to be a trusted institution where every patient receives the care and support they deserve. Our focus is on:
+            </p>
+            <ul>
+                <li>Expanding access to high-quality healthcare services in the region.</li>
+                <li>Innovating and adopting the latest advancements in medical technology and research.</li>
+                <li>Fostering a culture of continuous learning and excellence among our healthcare professionals.</li>
+                <li>Being a center for health and healing that the community can always rely on.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row my-4">
+        <div class="col-md-6">
+            <h2>Community Focus</h2>
+            <p>
+                As a community-driven hospital, we believe that true health and wellness come from supporting individuals both inside and outside our facility. We are proud to engage in numerous community outreach programs, free health screenings, educational seminars, and wellness workshops designed to empower individuals to take control of their health.
+            </p>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="text-center my-5">
+        <h3>Contact Us</h3>
+        <p>Have questions or need to make an appointment? Reach out to us today and let us know how we can help you on your journey to better health.</p>
+        <a href="{% url 'contact' %}" class="btn btn-primary">Contact Us</a>
+    </div>
+</div>
+{% endblock %}

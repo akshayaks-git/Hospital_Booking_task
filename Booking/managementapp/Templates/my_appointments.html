@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Appointments</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .table thead { background-color: #0d6efd; color: white; }
+        .badge { font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <h2 class="mb-4 text-center text-primary">
+        <i class="bi bi-calendar-check-fill"></i> My Appointments
+    </h2>
+
+    <div class="alert alert-info shadow-sm rounded-3">
+        <p class="mb-1">🟢 <b>Confirmed</b> appointments can be cancelled.</p>
+        <p class="mb-0">🔴 <b>Cancelled</b> appointments cannot be restored.</p>
+    </div>
+
+    {% if appointments %}
+    <div class="table-responsive shadow-sm rounded-4">
+        <table class="table table-hover table-bordered align-middle text-center bg-white">
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Specialization</th>
+                    <th>Date</th>
+                    <th>Time Slot</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for booking in appointments %}
+                <tr>
+                    <td>{{ booking.doctor.name }}</td>
+                    <td>{{ booking.doctor.doc_spec }}</td>
+                    <td>{{ booking.booking_date }}</td>
+                    <td>{{ booking.time_slot }}</td>
+                    <td>
+                        {% if booking.is_confirmed %}
+                            <span class="badge bg-success">Confirmed</span>
+                        {% else %}
+                            <span class="badge bg-danger">Cancelled</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if booking.is_confirmed %}
+                            <form method="post" action="{% url 'cancel_appointment' booking.id %}" onsubmit="return confirm('Cancel this appointment?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <div class="alert alert-warning text-center shadow-sm">
+            <i class="bi bi-exclamation-triangle-fill"></i> No appointments found.
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>

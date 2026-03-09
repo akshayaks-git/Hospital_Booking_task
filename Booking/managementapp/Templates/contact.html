@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}  {# For Crispy Forms if you're using it #}
+
+{% block title %}
+Contact Us
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center">Contact Revive Hospital</h1>
+    <hr>
+    
+
+    <div class="row my-5">
+        <div class="col-md-6">
+            <h2>Get In Touch</h2>
+            <p>If you have any questions, need to make an appointment, or would like more information about our services, please feel free to contact us using the form below. We’re here to assist you with all your healthcare needs.</p>
+
+            <form method="POST" action="{% url 'contact' %}">
+                {% csrf_token %}
+                {{ form|crispy }} 
+                                            {# If you're using Crispy Forms, otherwise use {{ form.as_p }} #}
+
+
+        <div class="col-md-6">
+            <h2>Contact Details</h2>
+            <ul class="list-unstyled">
+                <li><strong>Address:</strong></li>
+                <li>Hospital Revive</li>
+                <li>123 Health Avenue</li>
+                <li>pathanamthitta, kerala, 689645</li>
+                <br>
+                <li><strong>Phone:</strong></li>
+                <li>+91 765457806 ,04765457806</li>
+                <br>
+                <li><strong>Email:</strong></li>
+                <li><a href="mailto:info@hospitalrevive.com">info@hospitalrevive.com</a></li>
+                <br>
+                <li><strong>Working Hours:</strong></li>
+                <li>Monday - Friday: 8:00 AM - 8:00 PM</li>
+                <li>Saturday: 9:00 AM - 5:00 PM</li>
+                <li>Sunday: Closed</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
